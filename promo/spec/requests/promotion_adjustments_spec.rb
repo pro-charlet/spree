@@ -5,9 +5,6 @@ describe "Promotion Adjustments" do
 
   context "coupon promotions", :js => true do
     before(:each) do
-      PAYMENT_STATES = Spree::Payment.state_machine.states.keys unless defined? PAYMENT_STATES
-      SHIPMENT_STATES = Spree::Shipment.state_machine.states.keys unless defined? SHIPMENT_STATES
-      ORDER_STATES = Spree::Order.state_machine.states.keys unless defined? ORDER_STATES
       # creates a default shipping method which is required for checkout
       create(:bogus_payment_method, :environment => 'test')
       # creates a check payment method so we don't need to worry about cc details
@@ -147,7 +144,6 @@ describe "Promotion Adjustments" do
 
     it "should allow an admin to create an automatic promo with flat percent discount" do
       fill_in "Name", :with => "Order's total > $30"
-      fill_in "Code", :with => ""
       select "Order contents changed", :from => "Event"
       click_button "Create"
       page.should have_content("Editing Promotion")
@@ -176,7 +172,6 @@ describe "Promotion Adjustments" do
 
     it "should allow an admin to create an automatic promotion with free shipping (no code)" do
       fill_in "Name", :with => "Free Shipping"
-      fill_in "Code", :with => ""
       click_button "Create"
       page.should have_content("Editing Promotion")
 
@@ -416,15 +411,15 @@ describe "Promotion Adjustments" do
       visit spree.root_path
       click_link "RoR Bag"
       click_button "Add To Cart"
-      Spree::Order.last.total.to_f.should == 13.00
+      Spree::Order.last.total.to_f.should == 15.00
 
       fill_in "order[line_items_attributes][0][quantity]", :with => "2"
       click_button "Update"
-      Spree::Order.last.total.to_f.should == 31.00
+      Spree::Order.last.total.to_f.should == 35.00
 
       fill_in "order[line_items_attributes][0][quantity]", :with => "3"
       click_button "Update"
-      Spree::Order.last.total.to_f.should == 49.00
+      Spree::Order.last.total.to_f.should == 54.00
     end
 
     def create_per_product_promotion product_name, discount_amount

@@ -63,7 +63,6 @@ module Spree
     before_create :link_by_email
     after_create :create_tax_charge!
 
-    # TODO: validate the format of the email as well (but we can't rely on authlogic anymore to help with validation)
     validates :email, :presence => true, :email => true, :if => :require_email
     validate :has_available_shipment
     validate :has_available_payment
@@ -144,7 +143,7 @@ module Spree
     # Indicates whether there are any backordered InventoryUnits associated with the Order.
     def backordered?
       return false unless Spree::Config[:track_inventory_levels]
-      inventory_units.backorder.present?
+      inventory_units.backordered.present?
     end
 
     # Returns the relevant zone (if any) to be used for taxation purposes.  Uses default tax zone
@@ -230,7 +229,7 @@ module Spree
 
     def allow_cancel?
       return false unless completed? and state != 'canceled'
-      %w{ready backorder pending}.include? shipment_state
+      shipment_state.nil? || %w{ready backorder pending}.include?(shipment_state)
     end
 
     def allow_resume?
@@ -350,8 +349,8 @@ module Spree
     def finalize!
       touch :completed_at
       InventoryUnit.assign_opening_inventory(self)
-      # lock any optional adjustments (coupon promotions, etc.)
-      adjustments.optional.each { |adjustment| adjustment.update_column('locked', true) }
+      # lock all adjustments (coupon promotions, etc.)
+      adjustments.each { |adjustment| adjustment.update_column('locked', true) }
       deliver_order_confirmation_email
 
       self.state_changes.create({
@@ -379,8 +378,23 @@ module Spree
     end
 
     def rate_hash
-      @rate_hash ||= available_shipping_methods(:front_end).collect do |ship_method|
-        next unless cost = ship_method.calculator.compute(self)
+      return @rate_hash if @rate_hash.present?
+
+      # reserve one slot for each shipping method computation
+      computed_costs = Array.new(available_shipping_methods(:front_end).size)
+
+      # create all the threads and kick off their execution
+      threads = available_shipping_methods(:front_end).each_with_index.map do |ship_method, index|
+        Thread.new { computed_costs[index] = [ship_method, ship_method.calculator.compute(self)] }
+      end      
+
+      # wait for all threads to finish
+      threads.map(&:join)
+
+      # now consolidate and memoize the threaded results
+      @rate_hash ||= computed_costs.map do |pair|
+        ship_method,cost = *pair
+        next unless cost
         ShippingRate.new( :id => ship_method.id,
                           :shipping_method => ship_method,
                           :name => ship_method.name,

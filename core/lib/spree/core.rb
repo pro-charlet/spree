@@ -31,7 +31,7 @@ require 'rails/generators'
 require 'state_machine'
 require 'paperclip'
 require 'kaminari'
-require 'nested_set'
+require 'awesome_nested_set'
 require 'acts_as_list'
 require 'active_merchant'
 require 'ransack'
@@ -40,6 +40,7 @@ require 'deface'
 require 'cancan'
 require 'select2-rails'
 require 'spree/money'
+require 'rabl'
 
 module Spree
 
@@ -105,7 +106,7 @@ ActiveRecord::Base.class_eval do
 end
 
 if defined?(ActionView)
-  require 'nested_set/helper'
+  require 'awesome_nested_set/helper'
   ActionView::Base.class_eval do
     include CollectiveIdea::Acts::NestedSet::Helper
   end

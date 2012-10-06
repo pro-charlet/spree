@@ -106,11 +106,13 @@ describe Spree::Order do
       order.finalize!
     end
 
-    it "should freeze optional adjustments" do
+    it "should freeze all adjustments" do
       Spree::OrderMailer.stub_chain :confirm_email, :deliver
-      adjustment = mock_model(Spree::Adjustment)
-      order.stub_chain :adjustments, :optional => [adjustment]
-      adjustment.should_receive(:update_column).with("locked", true)
+      adjustment1 = mock_model(Spree::Adjustment, :mandatory => true)
+      adjustment2 = mock_model(Spree::Adjustment, :mandatory => false)
+      order.stub :adjustments => [adjustment1, adjustment2]
+      adjustment1.should_receive(:update_column).with("locked", true)
+      adjustment2.should_receive(:update_column).with("locked", true)
       order.finalize!
     end
 
@@ -175,16 +177,16 @@ describe Spree::Order do
 
   context "#backordered?" do
     it "should indicate whether any units in the order are backordered" do
-      order.stub_chain(:inventory_units, :backorder).and_return []
+      order.stub_chain(:inventory_units, :backordered).and_return []
       order.backordered?.should be_false
-      order.stub_chain(:inventory_units, :backorder).and_return [mock_model(Spree::InventoryUnit)]
+      order.stub_chain(:inventory_units, :backordered).and_return [mock_model(Spree::InventoryUnit)]
       order.backordered?.should be_true
     end
 
     it "should always be false when inventory tracking is disabled" do
       pending
       Spree::Config.set :track_inventory_levels => false
-      order.stub_chain(:inventory_units, :backorder).and_return [mock_model(Spree::InventoryUnit)]
+      order.stub_chain(:inventory_units, :backordered).and_return [mock_model(Spree::InventoryUnit)]
       order.backordered?.should be_false
     end
   end
@@ -259,6 +261,13 @@ describe Spree::Order do
       order.shipment_state = 'ready'
       order.completed_at = Time.now
       order.can_cancel?.should be_false
+    end
+
+    it "should be true for completed order with no shipment" do
+      order.state = 'complete'
+      order.shipment_state = nil
+      order.completed_at = Time.now
+      order.can_cancel?.should be_true
     end
   end
 

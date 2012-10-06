@@ -108,6 +108,7 @@ en:
       spree/tax_rate:
         amount: Rate
         included_in_price: Included in Price
+        show_rate_in_label: Show rate in label
       spree/taxon:
         name: Name
         permalink: Permalink
@@ -335,6 +336,7 @@ en:
   credits: Credits
   current: Current
   currency: Currency
+  currency_symbol_position: "Put currency symbol before or after dollar amount?"
   customer: Customer
   customer_details: "Customer Details"
   customer_details_updated: "The customer's details have been updated."
@@ -697,6 +699,7 @@ en:
   please_create_user: "Please create a user account"
   please_define_payment_methods: "Please define some payment methods first."
   powered_by: "Powered by"
+  populate_get_error: "Something went wrong. Please try adding the item again."
   presentation: Presentation
   preview: Preview
   previous: Previous

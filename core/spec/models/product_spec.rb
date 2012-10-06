@@ -99,6 +99,21 @@ describe Spree::Product do
         end
       end
     end
+
+    context "#available?" do
+      it "should be available if date is in the past" do
+        product.available_on = 1.day.ago
+        product.should be_available
+      end
+
+      it "should not be available if date is nil or in the future" do
+        product.available_on = nil
+        product.should_not be_available
+
+        product.available_on = 1.day.from_now
+        product.should_not be_available
+      end
+    end
   end
 
   context "validations" do
@@ -196,6 +211,29 @@ describe Spree::Product do
     it "supports Chinese" do
       @product = create(:product, :name => "你好")
       @product.permalink.should == "ni-hao"
+    end
+  end
+
+  context "manual permalink override" do
+    it "calling save_permalink with a parameter" do
+      @product = create(:product, :name => "foo")
+      @product.permalink.should == "foo"
+      @product.name = "foobar"
+      @product.save
+      @product.permalink.should == "foo"
+      @product.save_permalink(@product.name)
+      @product.permalink.should == "foobar"
+    end
+
+    it "should be incremented until not taken with a parameter" do
+      @product = create(:product, :name => "foo")
+      @product2 = create(:product, :name => "foobar")
+      @product.permalink.should == "foo"
+      @product.name = "foobar"
+      @product.save
+      @product.permalink.should == "foo"
+      @product.save_permalink(@product.name)
+      @product.permalink.should == "foobar-1"
     end
   end
 
