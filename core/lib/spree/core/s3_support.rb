@@ -25,7 +25,7 @@ module Spree
 
             self.attachment_definitions[field][:path].gsub!(/^:rails_root\/public\/spree\//, '/')
           else
-            delete self.attachment_definitions[field][:storage]
+            self.attachment_definitions[field].delete(:storage)
           end
         end
       end
