@@ -23,6 +23,8 @@ module Spree
             self.attachment_definitions[field][:s3_host_alias]  = config[:s3_host_alias] unless config[:s3_host_alias].blank?
 
             self.attachment_definitions[field][:path].gsub!(/^:rails_root\/public\/spree\//, '/')
+          else
+            delete self.attachment_definitions[field][:storage]
           end
         end
       end
