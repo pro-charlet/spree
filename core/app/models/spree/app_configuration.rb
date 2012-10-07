@@ -81,6 +81,7 @@ module Spree
     preference :use_s3, :boolean, :default => false # Use S3 for images rather than the file system
     preference :s3_protocol, :string
     preference :s3_host_alias, :string
+    preference :s3_host_name, :string
 
     # searcher_class allows spree extension writers to provide their own Search class
     def searcher_class
