@@ -91,12 +91,12 @@ $.fn.product_autocomplete = function(){
       select: function(event, ui) {
         $(this).val(ui.item.label);
         product = ui.item.data;
+
+        target_id = $(this).data('target-id') || 'add_variant_id';
         if (product['variant'] == undefined) {
-          // product
-          $('#add_variant_id').val(product['product']['master']['id']);
+          $('#' + target_id).val(product['product']['master']['id']);
         } else {
-          // variant
-          $('#add_variant_id').val(product['variant']['id']);
+          $('#' + target_id).val(product['variant']['id']);
         }
         return false;
       }
