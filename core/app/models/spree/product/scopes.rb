@@ -153,8 +153,8 @@ module Spree
       where(:id => ids)
     end
 
-    add_search_scope :excluding_product_ids do |*ids|
-      ids.empty? ? relation : where("#{Product.quoted_table_name}.id NOT IN (?)", *ids)
+    add_search_scope :excluding_product_ids do |ids|
+      ids.empty? ? where(true) : where("#{Product.quoted_table_name}.id NOT IN (?)", ids)
     end
 
     # Sorts products from most popular (popularity is extracted from how many
