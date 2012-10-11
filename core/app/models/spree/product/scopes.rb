@@ -26,6 +26,13 @@ module Spree
       self.scope(name.to_s, relation.order(order_text))
     end
 
+    add_search_scope :order_by_order_count do
+      joins(:variants_including_master,
+            "LEFT OUTER JOIN #{InventoryUnit.quoted_table_name} ON #{InventoryUnit.quoted_table_name}.variant_id = #{Variant.quoted_table_name}.id").
+        group("#{Product.quoted_table_name}.id").
+        order("COUNT('#{InventoryUnit.quoted_table_name}.id') DESC")
+    end
+
     add_search_scope :ascend_by_master_price do
       joins(:master).order("#{variant_table_name}.price ASC")
     end
@@ -144,6 +151,10 @@ module Spree
     # Alternatively, you could use find(collection_of_ids), but that would raise an exception if one product couldn't be found
     add_search_scope :with_ids do |*ids|
       where(:id => ids)
+    end
+
+    add_search_scope :excluding_product_ids do |*ids|
+      ids.empty? ? relation : where("#{Product.quoted_table_name}.id NOT IN (?)", *ids)
     end
 
     # Sorts products from most popular (popularity is extracted from how many

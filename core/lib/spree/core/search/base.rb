@@ -16,6 +16,21 @@ module Spree
           @products = @products_scope.includes([:master]).page(curr_page).per(per_page)
         end
 
+        def retrieve_products_without(black_products)
+          black_ids = black_products.collect { |p| p.id }
+          @products_scope = get_base_scope.
+            excluding_product_ids(black_ids).
+            order_by_order_count
+          curr_page = page || 1
+
+          @products = @products_scope.includes([:master]).page(curr_page).per(per_page)
+        end
+
+        def retrieve_best_products
+          @products_scope = get_base_scope.order_by_order_count.limit(2)
+          @products = @products_scope.includes([:master])
+        end
+
         def method_missing(name)
           if @properties.has_key? name
             @properties[name]
