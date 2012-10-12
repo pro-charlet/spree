@@ -29,4 +29,6 @@ child @users => :users do
       attributes :name
     end
   end
+
+  attributes :id
 end
