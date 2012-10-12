@@ -154,7 +154,7 @@ module Spree
     end
 
     add_search_scope :excluding_product_ids do |ids|
-      ids.empty? ? where(true) : where("#{Product.quoted_table_name}.id NOT IN (?)", ids)
+      ids.empty? ? where('TRUE') : where("#{Product.quoted_table_name}.id NOT IN (?)", ids)
     end
 
     # Sorts products from most popular (popularity is extracted from how many
