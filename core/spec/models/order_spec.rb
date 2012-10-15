@@ -85,7 +85,15 @@ describe Spree::Order do
       Spree::InventoryUnit.should_receive(:assign_opening_inventory).with(order)
       order.finalize!
     end
-    it "should change the shipment state to ready if order is paid"
+    it "should change the shipment state to ready if order is paid" do
+      order.stub :shipping_method => mock_model(Spree::ShippingMethod, :create_adjustment => true)
+      order.create_shipment!
+      order.stub(:paid? => true, :complete? => true)
+      order.finalize!
+      order.reload # reload so we're sure the changes are persisted
+      order.shipment.state.should == 'ready'
+      order.shipment_state.should == 'ready'
+    end
 
     after { Spree::Config.set :track_inventory_levels => true }
     it "should not sell inventory units if track_inventory_levels is false" do
@@ -124,8 +132,12 @@ describe Spree::Order do
 
   context "#process_payments!" do
     it "should process the payments" do
-      order.stub!(:payments).and_return([mock(Spree::Payment)])
-      order.payment.should_receive(:process!)
+      order.stub(:total).and_return(10)
+      payment = stub_model(Spree::Payment)
+      payments = [payment]
+      order.stub(:payments).and_return(payments)
+      payments.should_receive(:with_state).with('checkout').and_return(payments)
+      payments.first.should_receive(:process!)
       order.process_payments!
     end
   end
