@@ -66,6 +66,20 @@ module Spree
           case json_format
           when 'basic'
             collection.map {|p| {'id' => p.id, 'name' => p.name}}.to_json
+          when 'autocomplete'
+            collection.map { |v| {
+                :data => {
+                  :id            => v.id,
+                  :product_id    => v.product.id,
+                  :name          => v.fullname,
+                  :sku           => v.sku,
+                  :count_on_hand => v.count_on_hand,
+                  :image_url     => (v.images.count > 0 ? v.images.first.attachment.url(:mini) : nil)
+                },
+                :value  => v.fullname,
+                :result => v.fullname
+              }
+            }.to_json
           else
             collection.to_json(:include => {:variants => {:include => {:option_values => {:include => :option_type},
                                                           :images => {:only => [:id], :methods => :mini_url}}},
@@ -101,14 +115,24 @@ module Spree
                 @collection = @collection.group("spree_variants.price")
               end
           else
-            includes = [{:variants => [:images,  {:option_values => :option_type}]}, {:master => :images}]
+            includes = [:product, :images, :option_values => :option_type]
 
-            @collection = super.where(["name #{LIKE} ?", "%#{params[:q]}%"])
-            @collection = @collection.includes(includes).limit(params[:limit] || 10)
+            if !params[:ref].nil?
+              @collection = Spree::Variant.available
+                .search_by_ref(params[:ref])
+                .limit(params[:limit] || 10)
+                # .includes(includes)
+            elsif !params[:top].nil?
+              iu_tbl = Spree::InventoryUnit.quoted_table_name
+              v_tbl  = Spree::Variant.quoted_table_name
 
-            tmp = super.where(["#{Variant.table_name}.sku #{LIKE} ?", "%#{params[:q]}%"])
-            tmp = tmp.includes(:variants_including_master).limit(params[:limit] || 10)
-            @collection.concat(tmp)
+              @collection = Spree::Variant.available
+                .joins("LEFT OUTER JOIN #{iu_tbl} ON #{iu_tbl}.variant_id = #{v_tbl}.id")
+                .group("#{v_tbl}.id")
+                .order("COUNT('#{iu_tbl}.id') DESC")
+                .limit(params[:top].to_i)
+                # .includes(includes)
+            end
           end
           @collection
         end

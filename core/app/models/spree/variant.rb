@@ -122,6 +122,11 @@ module Spree
       self.option_values.detect { |o| o.option_type.name == opt_name }.try(:presentation)
     end
 
+    def fullname
+      name  = product.name
+      name += ' (' + options_text  + ')' unless option_values.empty?
+      name
+    end
 
     private
 
