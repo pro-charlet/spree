@@ -50,7 +50,7 @@ $(document).ready(function(){
 
     if ($("#customer_search").length > 0) {
         $("#customer_search").autocomplete({
-            minChars: 5,
+            minLength: 5,
             delay: 500,
             source: function(request, response) {
                 var params = { q: $('#customer_search').val(),
