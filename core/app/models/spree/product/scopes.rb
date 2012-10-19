@@ -27,10 +27,16 @@ module Spree
     end
 
     add_search_scope :order_by_order_count do
-      joins(:variants_including_master,
-            "LEFT OUTER JOIN #{InventoryUnit.quoted_table_name} ON #{InventoryUnit.quoted_table_name}.variant_id = #{Variant.quoted_table_name}.id").
-        group("#{Product.quoted_table_name}.id").
-        order("COUNT('#{InventoryUnit.quoted_table_name}.id') DESC")
+      p_tbl  = Spree::Product.table_name
+      iu_tbl = Spree::InventoryUnit.table_name
+      v_tbl  = Spree::Variant.table_name
+
+      select("COUNT(#{iu_tbl}.id) AS order_count").
+        joins(:variants_including_master,
+              "LEFT OUTER JOIN #{iu_tbl} " +
+              "  ON #{iu_tbl}.variant_id = #{v_tbl}.id").
+        group("#{p_tbl}.id").
+        order("order_count DESC")
     end
 
     add_search_scope :ascend_by_master_price do
