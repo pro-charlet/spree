@@ -174,6 +174,24 @@ module Spree
       ids.empty? ? where('TRUE') : where("#{Product.quoted_table_name}.id NOT IN (?)", ids)
     end
 
+    add_search_scope :order_by_order_count do
+      joins(:master).
+      order(%Q{
+            COALESCE((
+              SELECT
+                COUNT(#{InventoryUnit.quoted_table_name}.id)
+              FROM
+                #{InventoryUnit.quoted_table_name}
+              INNER JOIN
+                #{Variant.quoted_table_name} AS popular_variants
+              ON
+                popular_variants.id = #{InventoryUnit.quoted_table_name}.variant_id
+              WHERE
+                popular_variants.product_id = #{Product.quoted_table_name}.id
+            ), 0) DESC
+      })
+    end
+
     # Sorts products from most popular (popularity is extracted from how many
     # times use has put product in cart, not completed orders)
     #
