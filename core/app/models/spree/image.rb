@@ -29,6 +29,11 @@ module Spree
     include Spree::Core::S3Support
     supports_s3 :attachment
 
+    include Spree::Core::ImageDimensions
+
+    cattr_accessor :dimensions
+    self.dimensions = {}
+
     #used by admin products autocomplete
     def mini_url
       attachment.url(:mini, false)
