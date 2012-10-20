@@ -132,6 +132,8 @@ module Spree
                 .order("COUNT('#{iu_tbl}.id') DESC")
                 .limit(params[:top].to_i)
                 # .includes(includes)
+            else
+              @collection = []
             end
           end
           @collection

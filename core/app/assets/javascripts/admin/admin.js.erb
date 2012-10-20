@@ -48,18 +48,19 @@ $.fn.radioControlsVisibilityOfElement = function(dependentElementSelector){
 }
 
 
-$.fn.objectPicker = function(url){
+$.fn.objectPicker = function(url, query_param){
   $(this).tokenInput(url + "&authenticity_token=" + escape(AUTH_TOKEN), {
     searchDelay          : 600,
     hintText             : Spree.translations.type_to_search,
     noResultsText        : Spree.translations.no_results,
     searchingText        : Spree.translations.searching,
-    prePopulateFromInput : true
+    prePopulateFromInput : true,
+    queryParam           : query_param || 'q'
   });
 };
 
 $.fn.productPicker = function(){
-  $(this).objectPicker(Spree.routes.product_search_basic);
+  $(this).objectPicker(Spree.routes.product_search_basic, 'ref');
 }
 
 handle_date_picker_fields = function(){
