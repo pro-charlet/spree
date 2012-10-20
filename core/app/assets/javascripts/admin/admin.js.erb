@@ -63,6 +63,10 @@ $.fn.productPicker = function(){
   $(this).objectPicker(Spree.routes.product_search_basic, 'ref');
 }
 
+$.fn.userPicker = function(){
+  $(this).objectPicker(Spree.routes.user_search_basic);
+}
+
 handle_date_picker_fields = function(){
   $('.datepicker').datepicker({
     dateFormat: Spree.translations.date_picker,
@@ -137,6 +141,7 @@ $(document).ready(function(){
   });
 
   $('.tokeninput.products').productPicker();
+  $('.tokeninput.users').userPicker();
 
   $('body').on('click', '.select_properties_from_prototype', function(){
     $("#busy_indicator").show();
