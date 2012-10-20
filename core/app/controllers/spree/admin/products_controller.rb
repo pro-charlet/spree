@@ -65,7 +65,7 @@ module Spree
           json_format = params[:json_format] or 'default'
           case json_format
           when 'basic'
-            collection.map {|p| {'id' => p.id, 'name' => p.name}}.to_json
+            collection.map { |v| { 'id' => v.product.id, 'name' => v.product.name }}.uniq { |i| i['id'] }.to_json
           when 'autocomplete'
             collection.map { |v| {
                 :data => {
