@@ -28,6 +28,14 @@ module Spree
     scope :active, lambda { where(:deleted_at => nil) }
     scope :deleted, lambda { where('deleted_at IS NOT NULL') }
 
+    scope :search_by_ref, lambda { |ref|
+      cmp_operator = %w(PostgreSQL).include?(connection.adapter_name) ? 'ILIKE' : 'LIKE'
+
+      where("#{Spree::Variant.quoted_table_name}.sku #{cmp_operator} :sku OR " +
+            "#{Spree::Product.quoted_table_name}.name #{cmp_operator} :product_name", 
+            { :sku => "%#{ref}%", :product_name => "%#{ref}%" })
+    }
+
     # Returns number of inventory units for this variant (new records haven't been saved to database, yet)
     def on_hand
       Spree::Config[:track_inventory_levels] ? count_on_hand : (1.0 / 0) # Infinity
