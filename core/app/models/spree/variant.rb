@@ -28,6 +28,10 @@ module Spree
     scope :active, lambda { where(:deleted_at => nil) }
     scope :deleted, lambda { where('deleted_at IS NOT NULL') }
 
+    scope :on_hand, where("#{Spree::Variant.quoted_table_name}.count_on_hand > 0")
+    scope :product_active, lambda { joins(:product).merge(Spree::Product.active) }
+    scope :available, lambda { active.on_hand.product_active }
+
     scope :search_by_ref, lambda { |ref|
       cmp_operator = %w(PostgreSQL).include?(connection.adapter_name) ? 'ILIKE' : 'LIKE'
 
