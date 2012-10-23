@@ -2,8 +2,7 @@ $('#actions').append('<%= escape_javascript( render(:partial => 'spree/admin/pro
 
 initProductActions();
 
-$('#<%= dom_id @promotion_action %>').hide();
-$('#<%= dom_id @promotion_action %>').fadeIn();
+$('#<%= dom_id @promotion_action %>').hide().fadeIn()
+
 $('#<%= dom_id @promotion_action %> .tokeninput.products').productPicker();
 $('.product_autocomplete').product_autocomplete();
-
