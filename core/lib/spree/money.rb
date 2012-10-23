@@ -15,5 +15,9 @@ module Spree
     def to_s
       @money.format(@options)
     end
+
+    def self.symbol
+      ::Money::Currency.new(Spree::Config[:currency]).symbol
+    end
   end
 end
