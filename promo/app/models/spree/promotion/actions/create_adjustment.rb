@@ -13,9 +13,8 @@ module Spree
           # Nothing to do if the promotion is already associated with the order
           return if order.promotion_credit_exists?(promotion)
 
-          order.adjustments.promotion.reload.clear
-          order.update!
-          create_adjustment("#{I18n.t(:promotion)} (#{promotion.name})", order, order)
+          order.adjustments.from_promotion_action(self).destroy_all
+          create_adjustment(label, order, order)
           order.update!
         end
 
