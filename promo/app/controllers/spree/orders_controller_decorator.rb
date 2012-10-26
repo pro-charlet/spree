@@ -11,7 +11,6 @@ Spree::OrdersController.class_eval do
           render :edit and return
         end
       end
-      @order.line_items = @order.line_items.select {|li| li.quantity > 0 }
       fire_event('spree.order.contents_changed')
       respond_with(@order) do |format|
         format.html do

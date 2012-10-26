@@ -13,7 +13,6 @@ module Spree
     def update
       @order = current_order
       if @order.update_attributes(params[:order])
-        @order.line_items = @order.line_items.select {|li| li.quantity > 0 }
         fire_event('spree.order.contents_changed')
         respond_with(@order) do |format|
           format.html do
