@@ -6,9 +6,17 @@ format_product_autocomplete = function(item) {
         html += '<img src="' + image_url + '"/>';
     }
 
-    html += "<div><h4>" + item.data['name'] + "</h4>";
-    html += "<span><strong>" + Spree.translations.sku + ":</strong>" + item.data['sku'] + "</span>";
-    html += "<span><strong>" + Spree.translations.on_hand + ":</strong>" + item.data['count_on_hand'] + "</span></div>";
+
+
+    html += '<div class="params">';
+    html += '<div class="name">' + item.data['name'] + '</div>';
+    html += '<span class="sku_lbl">'       + Spree.translations.sku     + "</span>:"
+          + '<span class="sku_value">'     + item.data['sku']           + "</span>";
+
+    extra_class = (item.data['count_on_hand'] > 0 ? 'positive' : 'negative');
+    html += '<span class="on_hand_lbl">'   + Spree.translations.on_hand + "</span>:"
+          + '<span class="on_hand_value ' + extra_class + '">' + item.data['count_on_hand'] + "</span>";
+    html += "</div>";
 
     return html;
 }
