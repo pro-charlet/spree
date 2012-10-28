@@ -61,7 +61,7 @@ $.fn.product_autocomplete = function(){
                     }
                 });
             }
-            obj.response(obj.top_variants);
+            obj._search(obj.top_variants);
         });
 
         $(this).data("autocomplete")._renderItem = function(ul, item) {
