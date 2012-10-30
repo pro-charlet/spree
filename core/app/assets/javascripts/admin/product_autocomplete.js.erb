@@ -6,8 +6,6 @@ format_product_autocomplete = function(item) {
         html += '<img src="' + image_url + '"/>';
     }
 
-
-
     html += '<div class="params">';
     html += '<div class="name">' + item.data['name'] + '</div>';
     html += '<span class="sku_lbl">'       + Spree.translations.sku     + "</span>:"
@@ -25,21 +23,31 @@ $.fn.product_autocomplete = function(){
     return this.each(function() {
         $(this).autocomplete({
             source: function(request, response) {
-                params = {
-                    ref: this.element.val(),
-                    json_format: 'autocomplete',
-                    authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))
-                };
+                var data = null;
+                var term = request['term'];
+                if ($.isArray(term)) {
+                    data = term;
+                } else {
+                    params = {
+                        ref: term,
+                        json_format: 'autocomplete',
+                        authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))
+                    };
 
-                url = Spree.routes.product_search + '?' + jQuery.param(params);
-
-                $.get(url, response);
+                    $.ajax({
+                        type: 'GET',
+                        url: Spree.routes.product_search + '?' + $.param(params),
+                        async: false,
+                        success: function(_data) {
+                            data = _data;
+                        }
+                    });
+                }
+                if (data)
+                    response(data);
             },
             minLength: 2,
-            focus: function(event, ui) {
-                $(this).val(ui.item.label);
-                return false;
-            },
+            autoFocus: false,
             select: function(event, ui) {
                 $(this).val(ui.item.label);
 
@@ -51,25 +59,28 @@ $.fn.product_autocomplete = function(){
         });
 
         $(this).focus(function () {
-            obj = $(this).data("autocomplete")
-            if (obj.top_variants === undefined) {
-                params = {
-                    top: 3,
-                    json_format: 'autocomplete',
-                    authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))
-                };
+            term = $(this).val()
+            if (term == '') {
+                obj = $(this).data("autocomplete")
+                if (obj.top_variants === undefined) {
+                    params = {
+                        top: 3,
+                        json_format: 'autocomplete',
+                        authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))
+                    };
 
-                url = Spree.routes.product_search + '?' + jQuery.param(params);
-
-                $.ajax({
-                    url: url,
-                    async: false,
-                    success: function (data) {
-                        obj.top_variants = data;
-                    }
-                });
+                    $.ajax({
+                        url: Spree.routes.product_search + '?' + jQuery.param(params),
+                        async: false,
+                        success: function (data) {
+                            obj.top_variants = data;
+                        }
+                    });
+                }
+                obj._search(obj.top_variants);
+            } else {
+                obj._search(term);
             }
-            obj._search(obj.top_variants);
         });
 
         $(this).data("autocomplete")._renderItem = function(ul, item) {

@@ -1,6 +1,5 @@
 //<%#encoding: UTF-8%>
 //= require_self
-//= require admin/product_autocomplete
 //= require admin/taxon_autocomplete
 //= require select2
 
@@ -82,6 +81,8 @@ handle_date_picker_fields = function(){
 }
 
 $(document).ready(function(){
+  $(".product_autocomplete").product_autocomplete();
+
   handle_date_picker_fields();
   $(".observe_field").on('change', function() {
     target = $(this).attr("data-update");
@@ -154,7 +155,6 @@ $(document).ready(function(){
     });
     return false;
   });
-
 
   $('table.sortable').ready(function(){
     $('table.sortable tbody').sortable(

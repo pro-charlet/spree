@@ -1,5 +1,4 @@
 $(document).ready(function(){
-
   $("#add_line_item_to_order").on("click", function(){
     if($('#add_variant_id').val() == ''){ return false; }
     update_target = $(this).attr("data-update");
@@ -9,7 +8,4 @@ $(document).ready(function(){
     });
     return false;
   });
-
-  $(".product_autocomplete").product_autocomplete();
-
 });

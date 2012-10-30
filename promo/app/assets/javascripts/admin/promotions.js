@@ -1,7 +1,4 @@
 var initProductActions = function(){
-
-  $(".product_autocomplete").product_autocomplete();
-
   $('.calculator-fields').each(function(){
     var $fields_container = $(this);
     var $type_select = $fields_container.find('.type-select');
