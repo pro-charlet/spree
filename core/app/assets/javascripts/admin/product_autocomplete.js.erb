@@ -84,7 +84,7 @@ $.fn.product_autocomplete = function(){
         });
 
         $(this).data("autocomplete")._renderItem = function(ul, item) {
-            $(ul).addClass('ac_results');
+            $(ul).addClass('ac_results').addClass('product');
             html = format_product_autocomplete(item);
             return $("<li></li>")
                 .data("item.autocomplete", item)

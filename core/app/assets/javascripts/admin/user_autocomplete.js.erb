@@ -1,0 +1,56 @@
+$.fn.user_autocomplete = function(){
+    return this.each(function() {
+        $(this).autocomplete({
+            source: function(request, response) {
+                var data = null;
+
+                params = {
+                    q: request['term'],
+                    match_email: 1,
+                    authenticity_token: encodeURIComponent($('meta[name=csrf-token]').attr("content"))
+                };
+
+                $.ajax({
+                    type: 'GET',
+                    url: Spree.routes.user_search_autocomplete + '&' + $.param(params),
+                    async: false,
+                    success: function(_data) {
+                        data = _data;
+                    }
+                });
+
+                if (data)
+                    response(data);
+            },
+            minLength: 2,
+            autoFocus: false,
+            select: function(event, ui) {
+                $(this).val(ui.item.label);
+
+                target_id = $(this).data('target-id');
+                $('#' + target_id).val(ui.item.data['id']);
+
+                return false;
+            }
+        });
+
+        $(this).change(function () {
+            target_id = $(this).data('target-id');
+            $('#' + target_id).val('');
+        });
+
+        $(this).data("autocomplete")._renderItem = function(ul, item) {
+            $(ul).addClass('ac_results').addClass('user');
+            html = format_user_autocomplete(item);
+            return $("<li></li>")
+                .data("item.autocomplete", item)
+                .append("<a>" + item.data['email'] + "</a>")
+                .appendTo(ul);
+        }
+
+        $(this).data("autocomplete")._resizeMenu = function() {
+            var ul = this.menu.element;
+            ul.outerWidth(this.element.outerWidth());
+        }
+    });
+}
