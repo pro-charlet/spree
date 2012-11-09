@@ -48,6 +48,7 @@ $.fn.product_autocomplete = function(){
             },
             minLength: 2,
             autoFocus: false,
+            delay: 700,
             select: function(event, ui) {
                 $(this).val(ui.item.label);
 
