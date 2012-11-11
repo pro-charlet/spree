@@ -25,8 +25,10 @@ module Spree
 
       def destroy
         @line_item.destroy
+        @order.reload
         respond_with(@line_item) do |format|
-          format.html { render :partial => 'spree/admin/orders/form', :locals => { :order => @order.reload } }
+          format.html { render :partial => 'spree/admin/orders/form', :locals => { :order => @order } }
+          format.js
         end
       end
 
