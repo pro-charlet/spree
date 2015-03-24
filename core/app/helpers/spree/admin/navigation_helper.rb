@@ -58,9 +58,8 @@ module Spree
         url = options[:url] || object_url(resource)
         name = options[:name] || icon('delete') + ' ' + t(:delete)
         link_to name, url,
-          :remote => true,
-          :data => { :confirm => t(:are_you_sure), :method => 'delete' },
-          :class => 'delete'
+          :class => "delete-resource",
+          :data => { :confirm => t(:are_you_sure) }
       end
 
       def link_to_with_icon(icon_name, text, url, options = {})

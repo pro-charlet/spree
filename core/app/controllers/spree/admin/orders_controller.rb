@@ -47,6 +47,10 @@ module Spree
         respond_with(@orders)
       end
 
+      def show
+        respond_with(@order)
+      end
+
       def new
         @order = Order.create
         respond_with(@order)

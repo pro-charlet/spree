@@ -1,4 +1,5 @@
-Spree.routes = <%== {
+<script>
+  Spree.routes = <%== {
     :product_search           => spree.admin_products_path(:format => 'json'),
     :taxon_search             => spree.search_admin_taxons_path(:format => 'json'),
     :product_search_basic     => spree.admin_products_path(:format => 'json', :json_format => 'basic', :limit => 10),
@@ -6,4 +7,5 @@ Spree.routes = <%== {
     :user_search_basic        => spree.admin_users_path(:format => 'json', :json_format => 'basic', :limit => 10),
     :user_search_autocomplete => spree.admin_users_path(:format => 'json', :json_format => 'autocomplete', :limit => 10)
   }.to_json 
-%>;
+%>
+</script>

@@ -59,18 +59,21 @@ var handle_delete = function(e, data){
   last_rollback = data.rlbk;
   var node = data.rslt.obj;
 
-  if (confirm(Spree.translations.are_you_sure_delete)) {
-    $.ajax({
-      type: "POST",
-      dataType: "json",
-      url: base_url + node.attr("id"),
-      data: ({_method: "delete", authenticity_token: AUTH_TOKEN}),
-      error: handle_ajax_error
-    });
-  } else {
-    $.jstree.rollback(last_rollback);
-    last_rollback = null;
-  }
+  jConfirm(Spree.translations.are_you_sure_delete, Spree.translations.confirm_delete, function(r) {
+    if(r){
+      $.ajax({
+        type: "POST",
+        dataType: "json",
+        url: base_url + node.attr("id"),
+        data: ({_method: "delete", authenticity_token: AUTH_TOKEN}),
+        error: handle_ajax_error
+      });
+    }else{
+      $.jstree.rollback(last_rollback);
+      last_rollback = null;
+    }
+  });
+
 };
 
 var taxonomy_id; 
